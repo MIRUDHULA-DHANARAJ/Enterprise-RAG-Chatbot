@@ -1,84 +1,86 @@
 # Enterprise RAG Chatbot
 
-An Enterprise Retrieval-Augmented Generation (RAG) chatbot that enables users to interact with PDF documents using natural language. The system retrieves relevant information from uploaded documents using FAISS vector search and generates context-aware responses using Groq's Llama 3.3 70B model.
+An enterprise-grade Retrieval-Augmented Generation (RAG) chatbot that enables users to query PDF documents using natural language. The system combines dense vector retrieval, BM25 keyword search, and cross-encoder reranking to deliver accurate, context-aware responses while minimizing hallucinations.
+
+## 🚀 Features
+
+- PDF document ingestion and processing
+- Intelligent text chunking
+- Dense semantic retrieval using FAISS
+- BM25 keyword-based retrieval
+- Hybrid search (Dense + Sparse Retrieval)
+- Cross-Encoder reranking for improved relevance
+- Context-aware answer generation using LLMs
+- Streamlit-based user interface
+- Multi-document question answering
+- Low-latency inference through Groq API
 
 ---
 
-## 🚀 Overview
+## 📌 Problem Statement
 
-Traditional chatbots rely only on pre-trained knowledge and cannot access information stored in private documents. This project implements a Retrieval-Augmented Generation (RAG) pipeline that allows users to chat with their PDF documents.
+Large Language Models possess strong reasoning capabilities but lack access to private organizational knowledge. This project addresses that limitation by implementing a Retrieval-Augmented Generation (RAG) pipeline that grounds LLM responses using enterprise documents.
 
-The chatbot:
-
-* Extracts text from PDFs
-* Splits text into manageable chunks
-* Generates embeddings using Sentence Transformers
-* Stores embeddings in a FAISS vector database
-* Retrieves relevant document chunks for a query
-* Uses Groq's Llama 3.3 70B model to generate answers
+The chatbot retrieves the most relevant information from uploaded PDFs before generating responses, resulting in more accurate and reliable answers.
 
 ---
 
-## ✨ Features
-
-* 📄 PDF document ingestion
-* 🔍 Semantic search with FAISS
-* 🤖 Context-aware question answering
-* ⚡ Fast inference using Groq API
-* 🖥️ Streamlit-based web interface
-* 💻 Runs locally without GPU
-* 📚 Supports multiple PDF documents
-
----
-
-## 🏗️ System Architecture
+## 🏗 System Architecture
 
 ```text
 PDF Documents
       │
       ▼
-Text Extraction
+Document Processing
       │
       ▼
 Text Chunking
       │
       ▼
-Sentence Embeddings
+Embedding Generation
 (all-MiniLM-L6-v2)
       │
       ▼
 FAISS Vector Store
       │
-      ▼
-User Query
-      │
-      ▼
-Similarity Search
-      │
-      ▼
-Relevant Chunks
-      │
-      ▼
-Groq Llama 3.3 70B
-      │
-      ▼
-Generated Answer
+      ├───────────────┐
+      ▼               ▼
+Dense Search      BM25 Search
+      │               │
+      └───────┬───────┘
+              ▼
+      Hybrid Retrieval
+              │
+              ▼
+ Cross-Encoder Reranking
+              │
+              ▼
+      Top Relevant Chunks
+              │
+              ▼
+      Groq Llama 3.3 70B
+              │
+              ▼
+       Generated Answer
 ```
 
 ---
 
-## 🛠️ Tech Stack
+## ⚙️ Technology Stack
 
-| Component       | Technology       |
-| --------------- | ---------------- |
-| Language        | Python           |
-| Frontend        | Streamlit        |
-| Vector Database | FAISS            |
-| Embedding Model | all-MiniLM-L6-v2 |
-| LLM Provider    | Groq             |
-| LLM             | Llama 3.3 70B    |
-| PDF Processing  | PyPDF            |
-| Storage         | Pickle           |
+| Component | Technology |
+|------------|------------|
+| Language | Python |
+| Frontend | Streamlit |
+| Vector Store | FAISS |
+| Embedding Model | Sentence Transformers |
+| Dense Retrieval | all-MiniLM-L6-v2 |
+| Sparse Retrieval | BM25 |
+| Reranker | Cross-Encoder |
+| LLM Provider | Groq |
+| LLM | Llama 3.3 70B |
+| Document Processing | PyPDF |
+| Storage | Pickle |
 
 ---
 
@@ -88,16 +90,14 @@ Generated Answer
 Enterprise-RAG-Chatbot/
 │
 ├── app.py                # Streamlit application
-├── ingest.py             # PDF ingestion & indexing
-├── retrieve.py           # Semantic retrieval
+├── ingest.py             # Document ingestion and indexing
+├── retrieve.py           # Hybrid retrieval pipeline
 ├── generate.py           # LLM response generation
-├── utils.py              # Utility functions
+├── utils.py              # Helper functions
 │
 ├── docs/                 # PDF documents
-│   ├── sample1.pdf
-│   └── sample2.pdf
 │
-├── faiss.index           # Generated vector index
+├── faiss.index           # Dense vector index
 ├── chunks.pkl            # Stored document chunks
 │
 ├── requirements.txt
@@ -106,9 +106,9 @@ Enterprise-RAG-Chatbot/
 
 ---
 
-## ⚙️ Installation
+## 🔧 Installation
 
-### 1. Clone the Repository
+### Clone Repository
 
 ```bash
 git clone https://github.com/MIRUDHULA-DHANARAJ/Enterprise-RAG-Chatbot.git
@@ -116,13 +116,13 @@ git clone https://github.com/MIRUDHULA-DHANARAJ/Enterprise-RAG-Chatbot.git
 cd Enterprise-RAG-Chatbot
 ```
 
-### 2. Create a Virtual Environment
+### Create Virtual Environment
 
 ```bash
 python -m venv venv
 ```
 
-### Activate Environment
+Activate environment:
 
 **Windows**
 
@@ -136,7 +136,7 @@ venv\Scripts\activate
 source venv/bin/activate
 ```
 
-### 3. Install Dependencies
+### Install Dependencies
 
 ```bash
 pip install -r requirements.txt
@@ -147,33 +147,31 @@ pip install -r requirements.txt
 ## 🔑 Groq API Setup
 
 1. Create an account at https://console.groq.com
-2. Generate a free API key
-3. Copy the API key
-
-Example:
+2. Generate an API key
+3. Copy your key
 
 ```text
 gsk_xxxxxxxxxxxxxxxxxxxxxxxxx
 ```
 
-4. Paste the key into the Streamlit sidebar after launching the application
+4. Enter the key in the Streamlit sidebar after launching the application.
 
 ---
 
 ## ▶️ Running the Project
 
-### Step 1: Add PDF Files
+### Step 1: Add Documents
 
-Place your PDF documents inside the `docs/` folder.
+Place PDF files inside the `docs/` directory.
 
 ```text
 docs/
+├── employee_handbook.pdf
 ├── company_policy.pdf
-├── handbook.pdf
 └── product_manual.pdf
 ```
 
-### Step 2: Build the Vector Index
+### Step 2: Build Indexes
 
 ```bash
 python ingest.py
@@ -186,13 +184,13 @@ faiss.index
 chunks.pkl
 ```
 
-### Step 3: Launch the Application
+### Step 3: Launch Application
 
 ```bash
 streamlit run app.py
 ```
 
-Open in browser:
+Open:
 
 ```text
 http://localhost:8501
@@ -200,39 +198,52 @@ http://localhost:8501
 
 ---
 
-## 💬 Example Questions
+## 💬 Example Queries
 
-* What is the company's leave policy?
-* Summarize this document.
-* What are the key responsibilities mentioned?
-* Explain the onboarding process.
-* What are the product specifications?
+- What is the company's leave policy?
+- Summarize the onboarding process.
+- What responsibilities are assigned to project managers?
+- Explain the product specifications.
+- What are the compliance requirements mentioned in the handbook?
 
 ---
 
-## 📈 Future Improvements
+## 📈 Performance Improvements
 
-* Chat history memory
-* Source citations
-* Multi-document comparison
-* User authentication
-* Cloud deployment
-* Hybrid retrieval (BM25 + Vector Search)
-* Support for DOCX and PPTX files
+The system incorporates several retrieval enhancements:
+
+- Hybrid retrieval combining FAISS and BM25
+- Cross-encoder reranking of retrieved candidates
+- Context-grounded answer generation
+- Reduced hallucinations through retrieval augmentation
+- Improved retrieval precision compared to standalone vector search
 
 ---
 
 ## 🎯 Learning Outcomes
 
-This project demonstrates:
+This project demonstrates practical experience in:
 
-* Retrieval-Augmented Generation (RAG)
-* Semantic Search
-* Vector Databases (FAISS)
-* Embedding Models
-* Large Language Model Integration
-* Prompt Engineering
-* Streamlit Development
+- Retrieval-Augmented Generation (RAG)
+- Dense and Sparse Information Retrieval
+- Vector Databases (FAISS)
+- Transformer Embeddings
+- Cross-Encoder Reranking
+- Large Language Model Integration
+- Prompt Engineering
+- Streamlit Application Development
+
+---
+
+## 🔮 Future Enhancements
+
+- Conversational memory
+- Source citation highlighting
+- Document upload through UI
+- Multi-format document support (DOCX, PPTX)
+- Cloud deployment
+- User authentication
+- Feedback-driven retrieval optimization
 
 ---
 
@@ -242,8 +253,8 @@ This project demonstrates:
 
 B.Tech Artificial Intelligence and Data Science
 
-Interested in Data Science, Machine Learning, Generative AI, and Intelligent Information Retrieval Systems.
+Aspiring Data Scientist with interests in Generative AI, Information Retrieval, Machine Learning, and Intelligent Knowledge Systems.
 
 ---
 
-## ⭐ If you found this project useful, consider giving it a star!
+⭐ If you found this project useful, consider starring the repository.
