@@ -2,6 +2,7 @@
 
 An enterprise-grade Retrieval-Augmented Generation (RAG) chatbot that enables users to query PDF documents using natural language. The system combines dense vector retrieval, BM25 keyword search, and cross-encoder reranking to deliver accurate, context-aware responses while minimizing hallucinations.
 
+Live Demo : https://enterprise-rag-ai.streamlit.app/
 ## 🚀 Features
 
 - PDF document ingestion and processing
